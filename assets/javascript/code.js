@@ -7,19 +7,19 @@
 var questionCounter = 0;
 
 // score is used to calculate an additional score for the user. when the player guesses, if the player guessed correctly the time remaining is added to the score
-var score;
+var score = 0;
 
 // an integer incremented when the player answers correctly
-var numberRight;
+var numberRight = 0;
 
 // an integer incremented when the palyer answers incorrectly
-var numberWrong;
+var numberWrong = 0;
 
 //an array storing true or false booleans of whether the player answered correctly
 var answers = [];
 
-//a number used to hold the setInterval within the countDown object
-var counter;
+//a number used to hold the setTimeout within the countDown object
+var timeOut;
 
 // boolean variable regarding whether the game is active
 var gameOver = false;
@@ -78,6 +78,7 @@ var timerDisplay = document.getElementById("display");
 
 // ----------Start functions ----------
 
+// this function is used to start the game. it resets the values and runs the nextQuestion function.
 function start() {
 
 	// reset values
@@ -90,23 +91,14 @@ function start() {
 	countDown.time = 5;
 
     //generate first question
-    nextQuestion(questionCounter);
+    nextQuestion();
 }
 
-//start game with timer
-//countDown.start();
-
-// if guessed == true, go to next question 
-
-// if countDown.timer == 0, go to next question. needs to be checked with each click of the timer
-//if (countDown.timer == 0) console.log(questions.question2);
-
-// if array of guesses.length == 10, game over
-
-function nextQuestion(questionNumber) {
+// this function creates the next question and creates the click listeners for the choices. it also initializes the timers.
+function nextQuestion() {
 
     // variable to the question object
-    var questionObject = questions["question" + questionNumber];
+    var questionObject = questions["question" + questionCounter];
     //console.log(questionObject);
 
     // variable to hold the question
@@ -118,7 +110,7 @@ function nextQuestion(questionNumber) {
     //console.log(choices);
 
     // output the question to #question-area
-    questionArea.innerHTML = "<h2>" + (questionNumber + 1) + ": " + question + "</h2>";
+    questionArea.innerHTML = "<h2>" + (questionCounter + 1) + ": " + question + "</h2>";
 
     // output the question choices to #question-area
     for (var i = 0; i < 4; i++) {
@@ -172,16 +164,21 @@ function nextQuestion(questionNumber) {
             //console.log(this.value);
             questionCounter++;
             console.log(questionCounter);
+            
+            // stop the outOfTime function on button click
+            stopTimer();
 
             // actions to take if answer is correct
-            if (this.value) {
+            if (this.value == "true") {
                 numberRight++;
                 answers.push("correct");
                 score += countDown.time; // add time remaining to score
+                answered = true;
 
             } else {
                 numberWrong++;
                 answers.push("wrong");
+                answered = true;
             }
 
             // check end game condition
@@ -192,6 +189,10 @@ function nextQuestion(questionNumber) {
         })
     }
 
+    // ---------- end click listeners ----------
+
+    // run the out of time timer. will run the timesUp function in five seconds unless the timer is cleared
+    outOfTime();
 
 }
 
@@ -254,13 +255,54 @@ function createQuestions(object) {
 }
 
 function endGame() {
-	if (answers.length == 10) {
-		var gameOverH2 = createElement("h2");
+	if (answers.length >= 10) {
+
+		// end game with boolean
+		gameOver = true;
+
+		// show stats
+
+		// first clear "#question-area"
+		questionArea.innerHTML = "";
+
+		// create elements to show the stats
+		var gameOverH2 = document.createElement("h2");
 		gameOverH2.innerHTML = "Game Over!";
 		questionArea.appendChild(gameOverH2);
+
+		questionArea.appendChild(document.createElement("hr"));
+
+		// show answers that were right
+		var h3 = document.createElement("h3");
+		var text = document.createTextNode("Correct Answers: " + numberRight);
+		h3.appendChild(text);
+		questionArea.appendChild(h3);
+
+		// show answers that were wrong
+		h3 = document.createElement("h3");
+		text = document.createTextNode("Incorrect Answers: " + numberWrong);
+		h3.appendChild(text);
+		questionArea.appendChild(h3);
 	}
 }
 
-// ---------- code to run on start of game
+// functions for Timeout timers
+function outOfTime() {
+    timeOut = setTimeout(timesUp, 5000);
+}
+
+function stopTimer() {
+    clearTimeout(timeOut);
+}
+
+function timesUp() {
+    questionCounter++;
+    numberWrong++;
+    answers.push("wrong");
+    nextQuestion();
+}
+
+// ---------- code to run on start of game ----------
 
 start();
+
