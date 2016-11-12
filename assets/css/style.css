@@ -1,7 +1,35 @@
-p {
-	margin: 5px 5%;
+body  {
+	background-image: url("../images/green-black-gradient.jpg");
+	color: white;
+	font-family: 'Open Sans', sans-serif;
+}
+
+header {
+	position: absolute;
+}
+
+header h1 {
+	font-size: 15px;
+
+}
+
+header p {
+	font-size: 15px;
+
+}
+
+img {
+	height: 200px;  
 }
 
 #display h2 {
-	font-size: 75px;
+    font-size: 75px;
+}
+
+.choices {
+    margin-left: 5%;
+}
+
+hr {
+	color: white;
 }

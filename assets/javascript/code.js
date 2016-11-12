@@ -1,7 +1,10 @@
-// global variables to keep track of the score
+// ++++++++++ TODO SECTION ++++++++++
+// on restart, on first question the timer does not reach to 0 but switches questions on 1
+// show running tally of score, number correct and number wrong
+// add fadeout effect to countdown numbers
 
-// object of questions located in different javascript file questions.js
-// var questions = {}; 
+// vvvvvvvvvv GLOBAL VARIABLES SECTION vvvvvvvvvv
+// object of questions located in different javascript file questions.js 
 
 // questionCounter is incremented after each question is attempted. used to iterate new questions
 var questionCounter = 0;
@@ -78,6 +81,9 @@ var questionImage = questionObject.image;
 // HTML locations
 var questionArea = document.getElementById("question-area");
 var timerDisplay = document.getElementById("display");
+var resultsRight = document.getElementById("resultsRight");
+var resultsWrong = document.getElementById("resultsWrong");
+var resultsScore = document.getElementById("resultsScore");
 
 // ---------- end global variables ----------
 
@@ -99,6 +105,8 @@ function start() {
     choices = questionObject.choices;
     correctAnswer = questionObject.answer;
     questionImage = questionObject.image;
+    stopTimer();
+    stopAnswerTimer();
 
     //generate first question
     nextQuestion();
@@ -106,6 +114,8 @@ function start() {
 
 // this function creates the next question and creates the click listeners for the choices. it also initializes the timers.
 function nextQuestion() {
+
+    var questionNumber = questionCounter + 1;
 
     // first check to see if endGame condition is met
     endGame();
@@ -120,7 +130,12 @@ function nextQuestion() {
         questionImage = questionObject.image;
         
         // print question to the screen
-        questionArea.innerHTML = "<h2>" + question + "</h2>";
+        questionArea.innerHTML = "<h2>" + questionNumber + ": " + question + "</h2>";
+
+        // remove scores from screen
+        resultsRight.innerHTML = "";
+        resultsWrong.innerHTML = "";
+        resultsScore.innerHTML = "";
 
         // output the question choices to #question-area
         for (var i = 0; i < 4; i++) {
@@ -252,9 +267,26 @@ function answerScreen() {
     // look at the last answer in the answer array
     var rightOrWrong = answers[answers.length-1];
 
-    questionArea.innerHTML = "<h2>" + rightOrWrong + "</h2>";
+    questionArea.innerHTML = "<h1>" + rightOrWrong + "</h1>";
 
-    // create elements to show the stats
+    var h4 = document.createElement("h4");
+    var text = document.createTextNode("Correct:   " + numberRight);
+    h4.appendChild(text);
+    h4.setAttribute("class", "col-md-3");
+    resultsRight.appendChild(h4);
+
+    h4 = document.createElement("h4");
+    text = document.createTextNode("Incorrect: " + numberWrong);
+    h4.appendChild(text);
+    h4.setAttribute("class", "col-md-3");
+    resultsWrong.appendChild(h4);
+
+    h4 = document.createElement("h4");
+    text = document.createTextNode("Score:     " + score);
+    h4.appendChild(text);
+    h4.setAttribute("class", "col-md-3");
+    resultsScore.appendChild(h4);
+
     questionArea.appendChild(document.createElement("hr"));
 
     if (rightOrWrong == "Correct!") {
@@ -270,7 +302,7 @@ function answerScreen() {
 
         // when answer is wrong, show correct answer
         var h3 = document.createElement("h3");
-        var text = document.createTextNode("The correct answer is: " + correctAnswer);
+        text = document.createTextNode("The correct answer is: " + correctAnswer);
         h3.appendChild(text);
         questionArea.appendChild(h3);
     }
@@ -321,6 +353,7 @@ function endGame() {
         text = document.createTextNode("Try Again?");
         newButton.appendChild(text);
         newButton.setAttribute("id", "newGameButton");
+        newButton.setAttribute("class", "btn btn-success");
 
         // add event listener here
         newButton.addEventListener("click", function() {

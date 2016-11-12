@@ -3,22 +3,32 @@
 <head>
 	<title>Javascript Quiz Show</title>
 	<meta charset="utf-8">
+	<!-- google fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	<!-- bootstrap -->
 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<!-- hover.css -->
 	<link rel="stylesheet" type="text/css" href="assets/css/hover.css">
+	<!-- custom stylesheet -->
 	<link rel="stylesheet" type="text/css" href="assets/css/style.css">
+	<!-- link to javascript questions object -->
 	<script type="text/javascript" src="assets/javascript/questions.js"></script>
 
 </head>
 <body>
 <div class="container">
-	<header>
-		<h1>Jumpy Javascript Questions</h1>
+	<header class="row">
+		<div class="col-md-2"></div>
+		<h1 class="col-md-2">Javascript Testionairre</h1>
+		<div id="resultsRight" class="col-md-2"></div>
+		<div id="resultsWrong" class="col-md-2"></div>
+		<div id="resultsScore" class="col-md-2"></div>
+		<div class="col-md-2"></div>
 	</header>
 	<br>
 	<section class="row">
 		<h2 id="display" class="col-md-4 col-md-offset-4"></h2>
 	</section>	
-	<br>
 	<br>
 	<section id="question-area" class="col-md-8 col-md-offset-2"></section>
 	</div>
