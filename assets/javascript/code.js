@@ -59,6 +59,21 @@ var countDown = {
     }
 }
 
+// more global variables for cross function communication
+//set global questionObject
+var questionObject = questions["question" + questionCounter];
+
+// variable to hold the question
+var question = questionObject.question;
+
+// variable array to hold the possible choices
+var choices = questionObject.choices;
+
+// variable setting the answer
+var correctAnswer = questionObject.answer;
+
+// variable setting the like to image
+var questionImage = questionObject.image;
 
 // HTML locations
 var questionArea = document.getElementById("question-area");
@@ -72,13 +87,18 @@ var timerDisplay = document.getElementById("display");
 function start() {
 
     // reset values
-    var questionCounter = 0;
-    var score = 0;
-    var numberRight = 0;
-    var numberWrong = 0;
-    var answers = [];
-    var gameOver = false;
+    questionCounter = 0;
+    score = 0;
+    numberRight = 0;
+    numberWrong = 0;
+    answers = [];
+    gameOver = false;
     countDown.time = 5;
+    questionObject = questions["question" + 0];
+    question = questionObject.question;
+    choices = questionObject.choices;
+    correctAnswer = questionObject.answer;
+    questionImage = questionObject.image;
 
     //generate first question
     nextQuestion();
@@ -87,27 +107,20 @@ function start() {
 // this function creates the next question and creates the click listeners for the choices. it also initializes the timers.
 function nextQuestion() {
 
+    // first check to see if endGame condition is met
+    endGame();
+
     if (!gameOver) {
 
-        // variable to the question object
-        var questionObject = questions["question" + questionCounter];
-        //console.log(questionObject);
-
-        // variable to hold the question
-        var question = questionObject.question;
-        //console.log(question);
-
-        // variable array to hold the possible choices
-        var choices = questionObject.choices;
-
-        // variable setting the answer
-        var correctAnswer = questionObject.answer;
-
-        // variable setting the like to image
-        var questionImage = questionObject.image;
-
-        // output the question to #question-area
-        questionArea.innerHTML = "<h2>" + (questionCounter + 1) + ": " + question + "</h2>";
+        // call the questionObect and its properties
+        questionObject = questions["question" + questionCounter];
+        question = questionObject.question;
+        choices = questionObject.choices;
+        correctAnswer = questionObject.answer;
+        questionImage = questionObject.image;
+        
+        // print question to the screen
+        questionArea.innerHTML = "<h2>" + question + "</h2>";
 
         // output the question choices to #question-area
         for (var i = 0; i < 4; i++) {
@@ -129,7 +142,7 @@ function nextQuestion() {
                     break;
             }
 
-            // create paragraph element to take the answer options  
+            // create paragraph element to take the choice options  
             var optionH3 = document.createElement("h3");
             optionH3.innerHTML = letter + choices[i];
 
@@ -139,10 +152,10 @@ function nextQuestion() {
             } else optionH3.value = "false";
 
             // add hover class to paragraph element
-            optionH3.className = "choices hvr-underline-from-center hvr-grow";
+            optionH3.className = "choices hvr-grow";
 
             //add data value to paragraph element
-            optionH3.data = i;
+            optionH3.data = ("number", i);
 
             // add the paragraph element to the section
             questionArea.appendChild(optionH3);
@@ -152,28 +165,23 @@ function nextQuestion() {
             questionArea.appendChild(br);
         }
 
-        // ---------- click listeners ----------
+        // ---------- click listeners on .choices----------
+        // get all elements with the class .choices
         var choicesClicks = document.getElementsByClassName("choices");
 
         // add clicklistener to each choice with the class ".choices"
         for (var i = 0; i < choicesClicks.length; i++) {
             choicesClicks[i].addEventListener("click", function() {
-                //console.log(this.value);
-                questionCounter++;
-                console.log(questionCounter);
 
                 // actions to take if answer is correct
                 if (this.value == "true") {
                     numberRight++;
-                    answers.push("correct");
+                    answers.push("Correct!");
                     score += countDown.time; // add time remaining to score
-                    answerScreen("Correct!", correctAnswer, questionImage);
 
                 } else {
                     numberWrong++;
-                    answers.push("wrong");
-                    answered = true;
-                    answerScreen("Incorrect.", correctAnswer, questionImage);
+                    answers.push("Incorrect.");
                 }
 
                 // stop the outOfTime function on button click
@@ -182,8 +190,8 @@ function nextQuestion() {
                 // stop the visual display of the countdown
                 countDown.stop();
 
-                // check end game condition
-                endGame();
+                // go to answerScreen for status update
+                answerScreen();
 
             })
         }
@@ -200,71 +208,87 @@ function nextQuestion() {
 
 }
 
-// ********** for basic homework game (make this an option) **********
-function createQuestions(object) {
-    var location = document.getElementById("question-area");
-    for (var i = 0; i < 10; i++) {
-        console.log(object["question" + i].question);
-        var questionH2 = document.createElement("h2");
-        questionH2.innerHTML = (i + 1) + ": " + object["question" + i].question;
-        location.appendChild(questionH2);
-
-        for (var j = 0; j < 4; j++) {
-
-            var letter;
-            switch (j) {
-                case 0:
-                    letter = "a: ";
-                    break;
-                case 1:
-                    letter = "b: ";
-                    break;
-                case 2:
-                    letter = "c: ";
-                    break;
-                case 3:
-                    letter = "d: ";
-                    break;
-            }
-
-            // create input element to take the answer options  
-            var optionP = document.createElement("p");
-            optionP.innerHTML = letter + object["question" + i].choices[j];
-
-            // add type radio so that the input will be radio buttons
-            optionP.type = "radio";
-
-            // add name so that the radios will be related
-            optionP.name = "question" + i;
-
-            //test for correct answer and add a value of true for the correct answer
-            if (object["question" + i].choices[j] == object["question" + i].answer) {
-                optionP.value = "true";
-            } else optionP.value = "false";
-
-            // add hover class to paragraph element
-            optionP.className = "hvr-underline-from-center hvr-grow";
-
-            //add data value to paragraph element
-            optionP.data = i;
-
-            // add the paragraph element to the section
-            location.appendChild(optionP);
-
-            //add <br> for spacing issue
-            var br = document.createElement("br");
-            location.appendChild(br);
-        }
-    }
+// functions for Timeout timers. outOfTime will pull up the answerScreen
+function outOfTime() {
+    timeOut = setTimeout(timesUp, 5000);
 }
 
+function stopTimer() {
+    clearTimeout(timeOut);
+}
+
+// this function handles the consequences of not answering the question in time
+// stop running timers. push incorrect. increment numberWrong. load answerScreen
+function timesUp() {
+
+    stopTimer();
+
+    // stop the visual countdown
+    countDown.stop();
+
+    // did not answer the question in time, so increment numberWrong
+    numberWrong++;
+
+    // did not answer the question in time, so push wrong to answers array
+    answers.push("Incorrect.");
+    
+    // load answer screen
+    answerScreen();
+}
+
+// this function is used on the answerScreen
+function nextQuestionTimer() {
+    answerTimeOut = setTimeout(nextQuestion, 5000);
+}
+
+function stopAnswerTimer() {
+    clearTimeout(answerTimeOut);
+}
+
+// this is the screen to show after each attempted question. 
+// tasks: increment questionCount. endGame check. show results
+function answerScreen() {
+
+    // look at the last answer in the answer array
+    var rightOrWrong = answers[answers.length-1];
+
+    questionArea.innerHTML = "<h2>" + rightOrWrong + "</h2>";
+
+    // create elements to show the stats
+    questionArea.appendChild(document.createElement("hr"));
+
+    if (rightOrWrong == "Correct!") {
+        // when answer is right show giphy image
+
+        var image = document.createElement("img");
+        image.setAttribute("src", questionImage);
+        image.setAttribute("alt", "giphy image");
+        questionArea.appendChild(image);
+    }
+
+    else {
+
+        // when answer is wrong, show correct answer
+        var h3 = document.createElement("h3");
+        var text = document.createTextNode("The correct answer is: " + correctAnswer);
+        h3.appendChild(text);
+        questionArea.appendChild(h3);
+    }
+
+    nextQuestionTimer();
+
+    questionCounter++;
+
+}
+
+// this function checks to see if the endGame condition is met and handles the true result
 function endGame() {
     if (answers.length >= 10) {
 
         // end game with boolean
         gameOver = true;
 
-        // show stats
+        // ---------- show stats ----------
 
         // first clear "#question-area"
         questionArea.innerHTML = "";
@@ -306,61 +330,6 @@ function endGame() {
         questionArea.appendChild(newButton);
 
     }
-}
-
-// functions for Timeout timers
-function outOfTime() {
-    timeOut = setTimeout(timesUp, 5000);
-}
-
-function stopTimer() {
-    clearTimeout(timeOut);
-}
-
-function timesUp() {
-    questionCounter++;
-    numberWrong++;
-    answers.push("wrong");
-    countDown.stop();
-
-    // perform endGame check here
-    if (answers.length == 10) gameOver = true;
-    endGame();
-    nextQuestion(questionCounter);
-}
-
-function nextQuestionTimer() {
-    answerTimeOut = setTimeOut(nextQuestion, 5000);
-}
-
-function answerScreen(rightOrWrong, correctAnswer, questionImage) {
-    questionArea.innerHTML = "<h2>" + rightOrWrong + "</h2>";
-
-    // create elements to show the stats
-    questionArea.appendChild(document.createElement("hr"));
-
-    if (rightOrWrong == "Correct!") {
-        // when answer is right show giphy image
-
-        var image = document.createElement("img");
-        image.setAttribute("src", questionImage);
-        image.setAttribute("alt", "giphy image");
-        questionArea.appendChild(image);
-    }
-
-    else {
-
-        // when answer is wrong, show correct answer
-        var h3 = document.createElement("h3");
-        var text = document.createTextNode("The correct answer is: " + correctAnswer);
-        h3.appendChild(text);
-        questionArea.appendChild(h3);
-    }
-
-    //outOfTime();
-
-    nextQuestionTimer();
-
 }
 
 // ---------- code to run on start of game ----------
