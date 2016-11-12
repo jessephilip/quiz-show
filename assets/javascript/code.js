@@ -21,6 +21,9 @@ var answers = [];
 //a number used to hold the setTimeout within the countDown object
 var timeOut;
 
+//a number used to hold the setTimeout within the countDown object
+var answerTimeOut;
+
 // boolean variable regarding whether the game is active
 var gameOver = false;
 
@@ -33,7 +36,7 @@ var countDown = {
     start: function() {
         //Use setInterval to start the count here
         // print to screen here so that the number is there before the countdown begins
-        var display = document.getElementById("display").innerHTML = ("<h2>" + countDown.time + "</h2>");
+        var display = document.getElementById("display").innerHTML = ("<h2 class='col-md-2 col-md-offset-4'>" + countDown.time + "</h2>");
 
         //run the decend function every second
         counter = setInterval(countDown.descend, 1000);
@@ -52,7 +55,7 @@ var countDown = {
         countDown.time--;
 
         //update the time remaining
-        var display = document.getElementById("display").innerHTML = ("<h2>" + countDown.time + "</h2>");
+        var display = document.getElementById("display").innerHTML = ("<h2 class='col-md-2 col-md-offset-4'>" + countDown.time + "</h2>");
     }
 }
 
@@ -102,8 +105,6 @@ function nextQuestion() {
 
         // variable setting the like to image
         var questionImage = questionObject.image;
-
-        //console.log(choices);
 
         // output the question to #question-area
         questionArea.innerHTML = "<h2>" + (questionCounter + 1) + ": " + question + "</h2>";
@@ -184,10 +185,6 @@ function nextQuestion() {
                 // check end game condition
                 endGame();
 
-
-
-                // run nextQuestion regardless of whether answer was correct or incorrect
-                //nextQuestion(questionCounter);
             })
         }
 
@@ -332,6 +329,10 @@ function timesUp() {
     nextQuestion(questionCounter);
 }
 
+function nextQuestionTimer() {
+    answerTimeOut = setTimeOut(nextQuestion, 5000);
+}
+
 function answerScreen(rightOrWrong, correctAnswer, questionImage) {
     questionArea.innerHTML = "<h2>" + rightOrWrong + "</h2>";
 
@@ -356,7 +357,9 @@ function answerScreen(rightOrWrong, correctAnswer, questionImage) {
         questionArea.appendChild(h3);
     }
 
-    outOfTime();
+    //outOfTime();
+
+    nextQuestionTimer();
 
 }
 

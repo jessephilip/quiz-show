@@ -1,3 +1,7 @@
 p {
 	margin: 5px 5%;
 }
+
+#display h2 {
+	font-size: 75px;
+}

@@ -35,7 +35,7 @@ var questions = {
 	},
 
 	"question5": {
-		question: "Which of the following is false",
+		question: "Which of the following is false?",
 		answer: "NaN == NaN",
 		choices: ["NaN == NaN", "!false", "0 == -0", '"1" == 1'],
 		image: "assets/images/notACat.gif"
